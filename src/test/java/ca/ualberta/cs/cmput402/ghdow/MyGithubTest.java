@@ -1,11 +1,10 @@
 package ca.ualberta.cs.cmput402.ghdow;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.kohsuke.github.GHIssue;
-import org.kohsuke.github.GHIssueState;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
+import org.kohsuke.github.*;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -16,6 +15,176 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class) class MyGithubTest {
+
+    private MyGithub myGithub;
+    private MyGithub spyGithub;
+    private GHRepository mockRepo1;
+    private GHRepository mockRepo2;
+    private GHCommit commitFriday1;
+    private GHCommit commitFriday2;
+    private GHCommit commitMonday;
+    private GHPullRequest mockPR;
+    private GHMyself mockMyself;
+    private GitHub mockGitHub;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        // Create a real instance and wrap it with a spy
+        myGithub = new MyGithub("fake_token");
+        spyGithub = spy(myGithub);
+
+        // Set up mocks for GitHub and GHMyself
+        mockGitHub = mock(GitHub.class);
+        mockMyself = mock(GHMyself.class);
+        spyGithub.gitHub = mockGitHub;
+        spyGithub.myself = mockMyself;
+        when(mockGitHub.getMyself()).thenReturn(mockMyself);
+        when(mockMyself.getLogin()).thenReturn("testuser");
+
+        // Set up a single repository.
+        mockRepo1 = mock(GHRepository.class);
+        mockRepo2 = mock(GHRepository.class);
+        Map<String, GHRepository> repoMap = new HashMap<>();
+        repoMap.put("repo1", mockRepo1);
+        repoMap.put("repo2", mockRepo2);
+        spyGithub.myRepos = repoMap;
+        when(mockRepo1.getName()).thenReturn("repo1");
+        when(mockRepo2.getName()).thenReturn("repo2");
+
+        // For getAverageCollaborators(), getCollaborators() returns a GHPersonSet.
+        @SuppressWarnings("unchecked")
+        GHPersonSet<GHUser> mockCollaborators1 = mock(GHPersonSet.class);
+        when(mockCollaborators1.size()).thenReturn(2);
+        when(mockRepo1.getCollaborators()).thenReturn(mockCollaborators1);
+
+        @SuppressWarnings("unchecked")
+        GHPersonSet<GHUser> mockCollaborators2 = mock(GHPersonSet.class);
+        when(mockCollaborators2.size()).thenReturn(3);
+        when(mockRepo2.getCollaborators()).thenReturn(mockCollaborators2);
+    }
+
+    @Test
+    void testGetMostPopularDay() throws IOException {
+        // Create three commits: two on Friday and one on Monday.
+        commitFriday1 = mock(GHCommit.class);
+        commitFriday2 = mock(GHCommit.class);
+        commitMonday = mock(GHCommit.class);
+
+        Calendar cal = Calendar.getInstance();
+        // Set commitFriday1 and commitFriday2 to a Friday.
+        cal.set(2024, Calendar.MARCH, 15, 10, 0, 0); // March 15, 2024 (Friday)
+        Date fridayDate = cal.getTime();
+        // Set commitMonday to a Monday.
+        cal.set(2024, Calendar.MARCH, 18, 10, 0, 0); // March 18, 2024 (Monday)
+        Date mondayDate = cal.getTime();
+
+        when(commitFriday1.getCommitDate()).thenReturn(fridayDate);
+        when(commitFriday2.getCommitDate()).thenReturn(fridayDate);
+        when(commitMonday.getCommitDate()).thenReturn(mondayDate);
+
+        List<GHCommit> fakeCommits = Arrays.asList(commitFriday1, commitFriday2, commitMonday);
+        doReturn(fakeCommits).when(spyGithub).getCommits();
+
+        // Expect "Friday" because there are 2 commits on Friday.
+        assertEquals("Friday", spyGithub.getMostPopularDay());
+    }
+
+    @Test
+    void testGetMostPopularMonth() throws IOException {
+        // Create commits in different months.
+        GHCommit commitMarch = mock(GHCommit.class);
+        GHCommit commitApril = mock(GHCommit.class);
+        GHCommit commitMarch2 = mock(GHCommit.class);
+
+        Calendar cal = Calendar.getInstance();
+        // Two commits in March.
+        cal.set(2024, Calendar.MARCH, 10, 10, 0, 0);
+        Date marchDate = cal.getTime();
+        // One commit in April.
+        cal.set(2024, Calendar.APRIL, 5, 10, 0, 0);
+        Date aprilDate = cal.getTime();
+
+        when(commitMarch.getCommitDate()).thenReturn(marchDate);
+        when(commitMarch2.getCommitDate()).thenReturn(marchDate);
+        when(commitApril.getCommitDate()).thenReturn(aprilDate);
+
+        List<GHCommit> fakeCommits = Arrays.asList(commitMarch, commitMarch2, commitApril);
+        doReturn(fakeCommits).when(spyGithub).getCommits();
+
+        // Expect "March" because it has 2 commits.
+        assertEquals("March", spyGithub.getMostPopularMonth());
+    }
+
+    @Test
+    void testGetAverageTimeBetweenCommits() throws IOException {
+        // Create three commits with known time intervals.
+        GHCommit commit1 = mock(GHCommit.class);
+        GHCommit commit2 = mock(GHCommit.class);
+        GHCommit commit3 = mock(GHCommit.class);
+
+        Calendar cal = Calendar.getInstance();
+        // commit1: March 10, 2024 10:00:00.
+        cal.set(2024, Calendar.MARCH, 10, 10, 0, 0);
+        Date date1 = cal.getTime();
+        // commit2: March 11, 2024 10:00:00 (1 day later).
+        cal.set(2024, Calendar.MARCH, 11, 10, 0, 0);
+        Date date2 = cal.getTime();
+        // commit3: March 13, 2024 10:00:00 (2 days after commit2).
+        cal.set(2024, Calendar.MARCH, 13, 10, 0, 0);
+        Date date3 = cal.getTime();
+
+        when(commit1.getCommitDate()).thenReturn(date1);
+        when(commit2.getCommitDate()).thenReturn(date2);
+        when(commit3.getCommitDate()).thenReturn(date3);
+
+        List<GHCommit> fakeCommits = Arrays.asList(commit1, commit2, commit3);
+        doReturn(fakeCommits).when(spyGithub).getCommits();
+
+        // Intervals: 1 day and 2 days. Average = (1 + 2) / 2 = 1.5 days.
+        assertEquals(1.5, spyGithub.getAverageTimeBetweenCommits(), 0.01);
+    }
+
+    @Test
+    void testGetAverageOpenIssues() throws IOException {
+        // Set repository to report 10 open issues.
+        when(mockRepo1.getOpenIssueCount()).thenReturn(10);
+        when(mockRepo2.getOpenIssueCount()).thenReturn(5);
+
+        // getAverageOpenIssues() iterates over our single repository.
+        double avgIssues = spyGithub.getAverageOpenIssues();
+        assertEquals(7.5, avgIssues, 0.01);
+    }
+
+    @Test
+    void testGetAveragePullRequestDuration() throws IOException {
+        // Create a pull request with a known duration (5 days).
+        mockPR = mock(GHPullRequest.class);
+
+        Calendar cal = Calendar.getInstance();
+        // PR created on March 1, 2024 10:00:00.
+        cal.set(2024, Calendar.MARCH, 1, 10, 0, 0);
+        Date prCreated = cal.getTime();
+        // PR closed on March 6, 2024 10:00:00.
+        cal.set(2024, Calendar.MARCH, 6, 10, 0, 0);
+        Date prClosed = cal.getTime();
+
+        when(mockPR.getCreatedAt()).thenReturn(prCreated);
+        when(mockPR.getClosedAt()).thenReturn(prClosed);
+
+        // When the repository is asked for closed pull requests, return our one PR.
+        when(mockRepo1.getPullRequests(GHIssueState.CLOSED)).thenReturn(List.of(mockPR));
+
+        double avgPRDuration = spyGithub.getAveragePullRequestDuration();
+        assertEquals(5.0, avgPRDuration, 0.01);
+    }
+
+    @Test
+    void testGetAverageCollaborators() throws IOException {
+        // getAverageCollaborators() iterates over our two repositories.
+        double avgCollaborators = spyGithub.getAverageCollaborators();
+        assertEquals(2.5, avgCollaborators, 0.01);
+    }
+
     @Test
     void getIssueCreateDates() throws IOException {
         // We don't have a login token for github :(

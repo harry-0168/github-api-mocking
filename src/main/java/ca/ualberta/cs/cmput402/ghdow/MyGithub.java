@@ -26,11 +26,27 @@ public class MyGithub {
         return gitHub.getMyself().getLogin();
     }
 
-    private List<GHRepository> getRepos() throws IOException {
-        if (myRepos == null) {
-            myRepos = getMyself().getRepositories();
+    public List<GHRepository> getRepos() throws IOException {
+        final int MAX_ATTEMPTS = 3;
+        int attempts = 0;
+        IOException lastException = null;
+
+        while (attempts < MAX_ATTEMPTS) {
+            try {
+                // Fetch repositories from GitHub API
+                if (myRepos == null) {
+                    myRepos = getMyself().getRepositories();
+                }
+                return new ArrayList<>(myRepos.values());
+            } catch (IOException e) {
+                lastException = e;
+                attempts++;
+                if (attempts < MAX_ATTEMPTS) {
+                    // Optional: Add a delay (e.g., Thread.sleep(1000)) for real-world scenarios
+                }
+            }
         }
-        return new ArrayList<>(myRepos.values());
+        throw new IOException("Failed to fetch repositories after " + MAX_ATTEMPTS + " attempts", lastException);
     }
 
     static private int argMax(int[] days) {
@@ -120,15 +136,22 @@ public class MyGithub {
     }
 
     // 4. Average number of open issues across repositories
-    public double getAverageOpenIssues() throws IOException {
-        int totalOpenIssues = 0;
-        int repoCount = 0;
-        for (GHRepository repo : getRepos()) {
-            totalOpenIssues += repo.getOpenIssueCount();
-            repoCount++;
+    public double getAverageOpenIssues() {
+        try {
+            int totalOpenIssues = 0;
+            int repoCount = 0;
+            for (GHRepository repo : getRepos()) { // Calls the retry-enabled method
+                totalOpenIssues += repo.getOpenIssueCount();
+                repoCount++;
+            }
+            return repoCount == 0 ? 0 : (double) totalOpenIssues / repoCount;
+        } catch (IOException e) {
+            System.err.println("Error: " + e.getMessage()); // Gracefully report the error
+            return 0.0; // Return a default value
         }
-        return repoCount == 0 ? 0 : (double) totalOpenIssues / repoCount;
     }
+
+
 
     // 5. Average duration (in days) that pull requests stay open
     public double getAveragePullRequestDuration() throws IOException {

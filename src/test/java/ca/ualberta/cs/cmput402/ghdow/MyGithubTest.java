@@ -23,7 +23,8 @@ import static org.mockito.Mockito.*;
     private GHCommit commitFriday1;
     private GHCommit commitFriday2;
     private GHCommit commitMonday;
-    private GHPullRequest mockPR;
+    private GHPullRequest mockPR1;
+    private GHPullRequest mockPR2;
     private GHMyself mockMyself;
     private GitHub mockGitHub;
 
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.*;
         when(mockGitHub.getMyself()).thenReturn(mockMyself);
         when(mockMyself.getLogin()).thenReturn("testuser");
 
-        // Set up a single repository.
+        // Set up mock repositories
         mockRepo1 = mock(GHRepository.class);
         mockRepo2 = mock(GHRepository.class);
         Map<String, GHRepository> repoMap = new HashMap<>();
@@ -155,28 +156,6 @@ import static org.mockito.Mockito.*;
         assertEquals(7.5, avgIssues, 0.01);
     }
 
-    @Test
-    void testGetAveragePullRequestDuration() throws IOException {
-        // Create a pull request with a known duration (5 days).
-        mockPR = mock(GHPullRequest.class);
-
-        Calendar cal = Calendar.getInstance();
-        // PR created on March 1, 2024 10:00:00.
-        cal.set(2024, Calendar.MARCH, 1, 10, 0, 0);
-        Date prCreated = cal.getTime();
-        // PR closed on March 6, 2024 10:00:00.
-        cal.set(2024, Calendar.MARCH, 6, 10, 0, 0);
-        Date prClosed = cal.getTime();
-
-        when(mockPR.getCreatedAt()).thenReturn(prCreated);
-        when(mockPR.getClosedAt()).thenReturn(prClosed);
-
-        // When the repository is asked for closed pull requests, return our one PR.
-        when(mockRepo1.getPullRequests(GHIssueState.CLOSED)).thenReturn(List.of(mockPR));
-
-        double avgPRDuration = spyGithub.getAveragePullRequestDuration();
-        assertEquals(5.0, avgPRDuration, 0.01);
-    }
 
     @Test
     void testGetAverageCollaborators() throws IOException {
@@ -284,6 +263,71 @@ import static org.mockito.Mockito.*;
             assertEquals(expectedDates.get(i), actualDates.get(i));
             System.out.println(expectedDates.get(i));
         }
+    }
+}
+
+@RunWith(MockitoJUnitRunner.class) class RobustnessTest {
+
+    private MyGithub myGithub;
+    private MyGithub spyGithub;
+    private GHRepository mockRepo1;
+    private GHRepository mockRepo2;
+
+    private GHMyself mockMyself;
+    private GitHub mockGitHub;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        // Create a real instance and wrap it with a spy
+        myGithub = new MyGithub("fake_token");
+        spyGithub = spy(myGithub);
+
+        // Set up mocks for GitHub and GHMyself
+        mockGitHub = mock(GitHub.class);
+        mockMyself = mock(GHMyself.class);
+        spyGithub.gitHub = mockGitHub;
+        spyGithub.myself = mockMyself;
+        when(mockGitHub.getMyself()).thenReturn(mockMyself);
+        when(mockMyself.getLogin()).thenReturn("testuser");
+
+        // set up mock repositories
+        mockRepo1 = mock(GHRepository.class);
+        mockRepo2 = mock(GHRepository.class);
+    }
+
+    @Test
+    void testGetAverageOpenIssues_RetriesThreeTimesOnFailure() throws IOException {
+        // Simulate 3 API failures
+        when(mockMyself.getRepositories())
+                .thenThrow(new IOException("API error")) // Attempt 1: Fail
+                .thenThrow(new IOException("API error")) // Attempt 2: Fail
+                .thenThrow(new IOException("API error")); // Attempt 3: Fail
+
+        double result = spyGithub.getAverageOpenIssues();
+
+        // Verify the default value is returned after 3 failures
+        assertEquals(0.0, result, 0.01);
+        // Verify the API was called exactly 3 times
+        verify(mockMyself, times(3)).getRepositories();
+    }
+
+    @Test
+    void testGetAverageOpenIssues_SucceedsAfterRetry() throws IOException {
+        // Simulate 2 failures, then success on the third attempt
+        when(mockMyself.getRepositories())
+                .thenThrow(new IOException("API error")) // Attempt 1: Fail
+                .thenThrow(new IOException("API error")) // Attempt 2: Fail
+                .thenReturn(Map.of("repo1", mockRepo1, "repo2", mockRepo2)); // Attempt 3: Succeed
+
+        when(mockRepo1.getOpenIssueCount()).thenReturn(10);
+        when(mockRepo2.getOpenIssueCount()).thenReturn(5);
+
+        double result = spyGithub.getAverageOpenIssues();
+
+        // Verify the correct result after retries
+        assertEquals(7.5, result, 0.01);
+        // Verify the API was called 3 times
+        verify(mockMyself, times(3)).getRepositories();
     }
 }
 

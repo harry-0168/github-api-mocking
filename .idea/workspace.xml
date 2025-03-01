@@ -23,6 +23,9 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand />
@@ -80,6 +83,13 @@
     "Gradle.MyGithubTest.executor": "Run",
     "Gradle.MyGithubTest.testGetAverageCollaborators.executor": "Run",
     "Gradle.MyGithubTest.testGetAverageOpenIssues.executor": "Run",
+    "Gradle.MyGithubTest.testGetAverageOpenIssues_RetriesThreeTimesOnFailure.executor": "Run",
+    "Gradle.MyGithubTest.testGetAverageOpenIssues_SucceedsAfterRetry.executor": "Run",
+    "Gradle.MyGithubTest.testGetAveragePullRequestDuration.executor": "Debug",
+    "Gradle.RobustnessTest.executor": "Run",
+    "Gradle.RobustnessTest.testGetAverageOpenIssues_RetriesThreeTimesOnFailure.executor": "Run",
+    "Gradle.RobustnessTest.testGetAverageOpenIssues_SucceedsAfterRetry.executor": "Run",
+    "Gradle.Tests in 'ghdow.test'.executor": "Run",
     "Gradle.individual-assignment-2-testing-with-mocks-harry-0168 [:ca.ualberta.cs.cmput402.ghdow.Main.main()].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -111,7 +121,7 @@
       <recent name="ca.ualberta.cs.cmput402.ghdow" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.MyGithubTest.testGetAverageCollaborators">
+  <component name="RunManager" selected="Gradle.MyGithubTest.testGetAveragePullRequestDuration">
     <configuration name="main" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -121,78 +131,6 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
-    </configuration>
-    <configuration name="MyGithubTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;ca.ualberta.cs.cmput402.ghdow.MyGithubTest&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="MyGithubTest.getFirstIssueCreateDate" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;ca.ualberta.cs.cmput402.ghdow.MyGithubTest.getFirstIssueCreateDate&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="MyGithubTest.testGetAverageCollaborators" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;ca.ualberta.cs.cmput402.ghdow.MyGithubTest.testGetAverageCollaborators&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
     </configuration>
     <configuration name="MyGithubTest.testGetAverageOpenIssues" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -218,6 +156,100 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="MyGithubTest.testGetAveragePullRequestDuration" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;ca.ualberta.cs.cmput402.ghdow.MyGithubTest.testGetAveragePullRequestDuration&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="RobustnessTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;ca.ualberta.cs.cmput402.ghdow.RobustnessTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="RobustnessTest.testGetAverageOpenIssues_SucceedsAfterRetry" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;ca.ualberta.cs.cmput402.ghdow.RobustnessTest.testGetAverageOpenIssues_SucceedsAfterRetry&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="Tests in 'ghdow.test'" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="Junits" type="JUnit" factoryName="JUnit">
       <module name="ghdow.test" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -232,18 +264,20 @@
     </configuration>
     <list>
       <item itemvalue="Application.main" />
-      <item itemvalue="Gradle.MyGithubTest" />
-      <item itemvalue="Gradle.MyGithubTest.testGetAverageCollaborators" />
+      <item itemvalue="Gradle.RobustnessTest" />
+      <item itemvalue="Gradle.RobustnessTest.testGetAverageOpenIssues_SucceedsAfterRetry" />
+      <item itemvalue="Gradle.Tests in 'ghdow.test'" />
       <item itemvalue="Gradle.MyGithubTest.testGetAverageOpenIssues" />
-      <item itemvalue="Gradle.MyGithubTest.getFirstIssueCreateDate" />
+      <item itemvalue="Gradle.MyGithubTest.testGetAveragePullRequestDuration" />
       <item itemvalue="JUnit.Junits" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.MyGithubTest.testGetAverageCollaborators" />
+        <item itemvalue="Gradle.MyGithubTest.testGetAveragePullRequestDuration" />
+        <item itemvalue="Gradle.Tests in 'ghdow.test'" />
         <item itemvalue="Gradle.MyGithubTest.testGetAverageOpenIssues" />
-        <item itemvalue="Gradle.MyGithubTest" />
-        <item itemvalue="Gradle.MyGithubTest.getFirstIssueCreateDate" />
+        <item itemvalue="Gradle.RobustnessTest.testGetAverageOpenIssues_SucceedsAfterRetry" />
+        <item itemvalue="Gradle.RobustnessTest" />
       </list>
     </recent_temporary>
   </component>
@@ -274,7 +308,8 @@
       <workItem from="1740547375307" duration="3067000" />
       <workItem from="1740588585471" duration="1354000" />
       <workItem from="1740723237648" duration="3537000" />
-      <workItem from="1740772219404" duration="19482000" />
+      <workItem from="1740772219404" duration="20399000" />
+      <workItem from="1740807495503" duration="3423000" />
     </task>
     <task id="LOCAL-00001" summary="Initial import">
       <created>1675722526750</created>
@@ -353,6 +388,11 @@
           <properties class="java.lang.NoClassDefFoundError" package="java.lang" />
           <option name="timeStamp" value="2" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/ca/ualberta/cs/cmput402/ghdow/MyGithubTest.java</url>
+          <line>177</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

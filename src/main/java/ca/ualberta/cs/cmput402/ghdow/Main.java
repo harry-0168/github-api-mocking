@@ -21,7 +21,7 @@ public class Main {
         System.out.println("Most often commits on: " + my.getMostPopularDay());
         System.out.println("Most popular month: " + my.getMostPopularMonth());
         System.out.println("Avg time between commits: " + my.getAverageTimeBetweenCommits());
-        System.out.println("Avg open Issues: " + my.getAverageOpenIssues());
+//        System.out.println("Avg open Issues: " + my.getAverageOpenIssues());
         System.out.println("Avg Pr duration: " + my.getAveragePullRequestDuration());
         System.out.println("Avg Collaborators: " + my.getAverageCollaborators());
 

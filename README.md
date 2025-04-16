@@ -3,4 +3,4 @@
 
 Finds the day of the week I make the most commits
 
-This is just example/starter code for using the [Java Github API](https://github.com/hub4j/github-api).
+Using the [Java Github API](https://github.com/hub4j/github-api).
